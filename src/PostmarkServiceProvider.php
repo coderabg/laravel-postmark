@@ -26,10 +26,11 @@ class PostmarkServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'postmark');
 
-        $this->resolveTransportManager()->extend('postmark', function () {
+        $this->resolveTransportManager()->extend('postmark', function ($config) {
             return new PostmarkTransport(
                 $this->guzzle(config('postmark.guzzle', [])),
-                config('postmark.secret', config('services.postmark.secret'))
+                config('postmark.secret', config('services.postmark.secret')),
+                $config['message_stream']
             );
         });
     }

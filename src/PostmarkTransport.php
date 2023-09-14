@@ -25,10 +25,13 @@ class PostmarkTransport extends Transport
     /** @var string */
     protected $key;
 
+    /** @var string */
+    protected $messageStream;
+
     /**
      * @throws \Coconuts\Mail\Exceptions\PostmarkException
      */
-    public function __construct(ClientInterface $client, ?string $key)
+    public function __construct(ClientInterface $client, ?string $key, ?string $messageStream = null)
     {
         if (empty(trim($key))) {
             throw new PostmarkException(
@@ -38,6 +41,7 @@ class PostmarkTransport extends Transport
 
         $this->key = $key;
         $this->client = $client;
+        $this->messageStream = $messageStream;
     }
 
     public function getApiEndpoint(Swift_Mime_SimpleMessage $message): string
@@ -250,6 +254,7 @@ class PostmarkTransport extends Transport
             'Metadata' => $this->getMetadata($message),
             'ReplyTo' => $this->getContacts($message->getReplyTo()),
             'Attachments' => $this->getAttachments($message),
+            'MessageStream' => $this->messageStream,
         ];
 
         if ($contents = $this->templated($message)) {
